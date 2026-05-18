@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MathCalc — BS/MS Program Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@300;400;600&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --card: #16161f;
+    --border: #2a2a3a;
+    --accent: #c8a96e;
+    --accent2: #7b9cff;
+    --accent3: #ff7b9c;
+    --text: #e8e8f0;
+    --muted: #888899;
+    --success: #6ecca8;
+    --warning: #ffb86c;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(123,156,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(123,156,255,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .glow-orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .orb1 { width: 400px; height: 400px; background: rgba(200,169,110,0.08); top: -100px; right: -100px; }
+  .orb2 { width: 350px; height: 350px; background: rgba(123,156,255,0.06); bottom: 100px; left: -100px; }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* Header */
+  header {
+    padding: 40px 0 20px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+  }
+
+  .logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.4rem;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .logo span { color: var(--text); font-style: italic; }
+
+  .tagline {
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding-bottom: 6px;
+  }
+
+  /* Tab navigation */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 40px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 6px;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 12px 16px;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+  .tab-btn:hover { color: var(--text); background: var(--border); }
+  .tab-btn.active {
+    background: var(--accent);
+    color: var(--bg);
+    font-weight: 600;
+  }
+
+  /* Panels */
+  .panel { display: none; }
+  .panel.active { display: block; animation: fadeIn 0.3s ease; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Section heading */
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, var(--text) 0%, var(--muted) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .section-desc { font-size: 0.72rem; color: var(--muted); margin-bottom: 32px; line-height: 1.6; }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 24px;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: rgba(200,169,110,0.3); }
+
+  .card-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* Grid layouts */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  /* Form elements */
+  label {
+    display: block;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  input[type="number"], input[type="text"], select {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  input:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(200,169,110,0.1);
+  }
+  select option { background: var(--card); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .btn-primary { background: var(--accent); color: var(--bg); }
+  .btn-primary:hover { background: #d4b87a; transform: translateY(-1px); }
+  .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-danger { background: rgba(255,123,156,0.15); color: var(--accent3); border: 1px solid rgba(255,123,156,0.3); }
+  .btn-danger:hover { background: rgba(255,123,156,0.25); }
+
+  /* Result display */
+  .result-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 20px;
+    display: none;
+  }
+  .result-box.visible { display: block; animation: fadeIn 0.3s ease; }
+
+  .result-main {
+    font-family: 'DM Serif Display', serif;
+    font-size: 3rem;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .result-label { font-size: 0.68rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; }
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .result-stat { }
+  .result-stat-val {
+    font-size: 1.4rem;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .result-stat-lbl { font-size: 0.62rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+
+  /* Progress bar */
+  .progress-bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.6s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* Course row */
+  .course-row {
+    display: grid;
+    grid-template-columns: 2fr 1.2fr 1.2fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(42,42,58,0.5);
+  }
+  .course-row:last-child { border-bottom: none; }
+
+  .remove-btn {
+    width: 28px; height: 28px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .remove-btn:hover { background: rgba(255,123,156,0.2); border-color: var(--accent3); color: var(--accent3); }
+
+  /* Grades table */
+  .grade-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+  .grade-table th {
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .grade-table td { padding: 10px 12px; border-bottom: 1px solid rgba(42,42,58,0.4); }
+  .grade-table tr:last-child td { border-bottom: none; }
+  .grade-table tr:hover td { background: rgba(200,169,110,0.04); }
+
+  /* Badge */
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .badge-gold { background: rgba(200,169,110,0.2); color: var(--accent); border: 1px solid rgba(200,169,110,0.3); }
+  .badge-blue { background: rgba(123,156,255,0.15); color: var(--accent2); border: 1px solid rgba(123,156,255,0.3); }
+  .badge-green { background: rgba(110,204,168,0.15); color: var(--success); border: 1px solid rgba(110,204,168,0.3); }
+  .badge-red { background: rgba(255,123,156,0.15); color: var(--accent3); border: 1px solid rgba(255,123,156,0.3); }
+
+  /* Divider */
+  .divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+  /* Math formula display */
+  .formula-box {
+    background: #0d0d14;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 0.78rem;
+    color: var(--accent2);
+    margin: 12px 0;
+    font-style: italic;
+  }
+
+  /* Info tooltip */
+  .info-note {
+    background: rgba(123,156,255,0.07);
+    border-left: 3px solid var(--accent2);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+
+  /* Scale tabs */
+  .scale-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .scale-btn {
+    padding: 6px 16px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .scale-btn.active { border-color: var(--accent2); color: var(--accent2); background: rgba(123,156,255,0.1); }
+
+  @media (max-width: 700px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .tabs { flex-direction: column; }
+    .course-row { grid-template-columns: 1fr 1fr; }
+    .logo { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="glow-orb orb1"></div>
+<div class="glow-orb orb2"></div>
+
+<div class="container">
+
+  <header>
+    <div>
+      <div class="logo">Math<span>Calc</span></div>
+      <div class="tagline" style="margin-top:4px;">BS / MS Program Calculator</div>
+    </div>
+    <div class="tagline" style="text-align:right;">Department of Mathematics</div>
+  </header>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('gpa')">GPA Calculator</button>
+    <button class="tab-btn" onclick="switchTab('credit')">Credit Tracker</button>
+    <button class="tab-btn" onclick="switchTab('stats')">Statistics Tools</button>
+    <button class="tab-btn" onclick="switchTab('converter')">Grade Converter</button>
+    <button class="tab-btn" onclick="switchTab('thesis')">Thesis Progress</button>
+  </div>
+
+  <!-- ===== GPA CALCULATOR ===== -->
+  <div id="panel-gpa" class="panel active">
+    <div class="section-title">GPA Calculator</div>
+    <div class="section-desc">Calculate semester, cumulative, or projected GPA for BS/MS Math programs. Supports 4.0, 5.0, and 10-point grading scales.</div>
+
+    <div class="card">
+      <div class="card-label">Grading Scale</div>
+      <div class="scale-tabs">
+        <button class="scale-btn active" onclick="setScale('4', this)">4.0 Scale</button>
+        <button class="scale-btn" onclick="setScale('5', this)">5.0 Scale</button>
+        <button class="scale-btn" onclick="setScale('10', this)">10-Point Scale</button>
+      </div>
+
+      <div class="card-label">Courses</div>
+      <div id="course-list"></div>
+
+      <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn btn-secondary" onclick="addCourse()">+ Add Course</button>
+        <button class="btn btn-danger" onclick="clearCourses()">✕ Clear All</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Cumulative GPA (Optional)</div>
+      <div class="grid-2">
+        <div>
+          <label>Previous Cumulative GPA</label>
+          <input type="number" id="prev-gpa" placeholder="e.g. 3.45" step="0.01" min="0">
+        </div>
+        <div>
+          <label>Previous Total Credits</label>
+          <input type="number" id="prev-credits" placeholder="e.g. 60" min="0">
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="calculateGPA()">Calculate GPA →</button>
+    </div>
+
+    <div class="result-box" id="gpa-result">
+      <div class="result-label">Semester GPA</div>
+      <div class="result-main" id="gpa-val">—</div>
+      <div class="result-grid" id="gpa-stats"></div>
+    </div>
+  </div>
+
+  <!-- ===== CREDIT TRACKER ===== -->
+  <div id="panel-credit" class="panel">
+    <div class="section-title">Credit Hour Tracker</div>
+    <div class="section-desc">Track progress toward BS (120–128 cr) and MS (30–36 cr) mathematics degree requirements.</div>
+
+    <div class="card">
+      <div class="card-label">Program Selection</div>
+      <div class="grid-2">
+        <div>
+          <label>Program</label>
+          <select id="prog-type" onchange="updateProgramReqs()">
+            <option value="bs">BS Mathematics</option>
+            <option value="ms">MS Mathematics</option>
+            <option value="bs-applied">BS Applied Mathematics</option>
+            <option value="ms-applied">MS Applied Mathematics</option>
+          </select>
+        </div>
+        <div>
+          <label>Concentration / Track</label>
+          <select id="prog-track">
+            <option>Pure Mathematics</option>
+            <option>Applied Mathematics</option>
+            <option>Statistics</option>
+            <option>Computational Math</option>
+            <option>Mathematical Physics</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Credits Completed</div>
+      <div class="grid-3">
+        <div>
+          <label>Core Math Credits</label>
+          <input type="number" id="core-cr" placeholder="0" min="0">
+        </div>
+        <div>
+          <label>Elective Credits</label>
+          <input type="number" id="elective-cr" placeholder="0" min="0">
+        </div>
+        <div>
+          <label>General Ed Credits</label>
+          <input type="number" id="gen-cr" placeholder="0" min="0">
+        </div>
+        <div>
+          <label>Research / Thesis Credits</label>
+          <input type="number" id="research-cr" placeholder="0" min="0">
+        </div>
+        <div>
+          <label>Lab / Seminar Credits</label>
+          <input type="number" id="lab-cr" placeholder="0" min="0">
+        </div>
+        <div>
+          <label>Transfer Credits</label>
+          <input type="number" id="transfer-cr" placeholder="0" min="0">
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="calculateCredits()">Analyze Progress →</button>
+
+    <div class="result-box" id="credit-result">
+      <div id="credit-content"></div>
+    </div>
+  </div>
+
+  <!-- ===== STATISTICS TOOLS ===== -->
+  <div id="panel-stats" class="panel">
+    <div class="section-title">Statistics Tools</div>
+    <div class="section-desc">Essential statistical calculations for mathematics coursework. Enter data separated by commas or spaces.</div>
+
+    <div class="card">
+      <div class="card-label">Descriptive Statistics</div>
+      <div style="margin-bottom:14px;">
+        <label>Data Set</label>
+        <input type="text" id="stat-data" placeholder="e.g. 12, 45, 23, 67, 34, 89, 56, 11">
+      </div>
+      <button class="btn btn-primary" onclick="calcStats()">Compute →</button>
+
+      <div class="result-box" id="stats-result" style="margin-top:16px;">
+        <div id="stats-content"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Probability Calculator</div>
+      <div class="grid-2">
+        <div>
+          <label>Distribution</label>
+          <select id="dist-type">
+            <option value="normal">Normal (Gaussian)</option>
+            <option value="binomial">Binomial</option>
+            <option value="poisson">Poisson</option>
+          </select>
+        </div>
+        <div id="dist-params">
+          <label>Mean (μ)</label>
+          <input type="number" id="dist-mean" placeholder="0">
+        </div>
+      </div>
+      <div class="grid-2" style="margin-top:12px;" id="dist-extra">
+        <div>
+          <label>Std Dev (σ)</label>
+          <input type="number" id="dist-sd" placeholder="1" step="0.01">
+        </div>
+        <div>
+          <label>X Value</label>
+          <input type="number" id="dist-x" placeholder="e.g. 1.5" step="0.01">
+        </div>
+      </div>
+      <button class="btn btn-primary" style="margin-top:14px;" onclick="calcProb()">Calculate P(X) →</button>
+      <div class="result-box" id="prob-result" style="margin-top:16px;">
+        <div id="prob-content"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Matrix Operations</div>
+      <div class="info-note">Enter a 2×2 or 3×3 matrix. Calculates determinant, trace, and checks if invertible.</div>
+      <div class="grid-2">
+        <div>
+          <label>Matrix Size</label>
+          <select id="mat-size" onchange="buildMatrix()">
+            <option value="2">2×2</option>
+            <option value="3">3×3</option>
+          </select>
+        </div>
+      </div>
+      <div id="matrix-grid" style="margin-top:14px;"></div>
+      <button class="btn btn-primary" style="margin-top:14px;" onclick="calcMatrix()">Compute Matrix Properties →</button>
+      <div class="result-box" id="matrix-result" style="margin-top:16px;">
+        <div id="matrix-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== GRADE CONVERTER ===== -->
+  <div id="panel-converter" class="panel">
+    <div class="section-title">Grade Converter</div>
+    <div class="section-desc">Convert between percentage, letter grades, and GPA points across different scales used in BS/MS mathematics programs.</div>
+
+    <div class="card">
+      <div class="card-label">Percentage → Letter Grade → GPA Points</div>
+      <div class="grid-2">
+        <div>
+          <label>Enter Percentage Score</label>
+          <input type="number" id="pct-input" placeholder="e.g. 84.5" min="0" max="100" step="0.1">
+        </div>
+        <div>
+          <label>Grading System</label>
+          <select id="conv-system">
+            <option value="us">US Standard (A/B/C/D/F)</option>
+            <option value="uk">UK System (First/2:1/2:2)</option>
+            <option value="pk">Pakistan HEC (A+/A/B+…)</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="margin-top:16px;" onclick="convertGrade()">Convert →</button>
+
+      <div class="result-box" id="conv-result" style="margin-top:16px;">
+        <div id="conv-content"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Grading Scale Reference</div>
+
+      <div class="scale-tabs" style="margin-bottom:16px;">
+        <button class="scale-btn active" onclick="showRefTable('us', this)">US</button>
+        <button class="scale-btn" onclick="showRefTable('pk', this)">Pakistan HEC</button>
+        <button class="scale-btn" onclick="showRefTable('uk', this)">UK</button>
+      </div>
+
+      <div id="ref-table-us">
+        <table class="grade-table">
+          <thead><tr><th>Percentage</th><th>Letter Grade</th><th>GPA (4.0)</th><th>Classification</th></tr></thead>
+          <tbody>
+            <tr><td>90–100</td><td><span class="badge badge-gold">A</span></td><td>4.0</td><td>Excellent</td></tr>
+            <tr><td>80–89</td><td><span class="badge badge-blue">B</span></td><td>3.0</td><td>Good</td></tr>
+            <tr><td>70–79</td><td><span class="badge badge-green">C</span></td><td>2.0</td><td>Satisfactory</td></tr>
+            <tr><td>60–69</td><td><span class="badge badge-red">D</span></td><td>1.0</td><td>Passing</td></tr>
+            <tr><td>0–59</td><td><span class="badge badge-red">F</span></td><td>0.0</td><td>Failing</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="ref-table-pk" style="display:none;">
+        <table class="grade-table">
+          <thead><tr><th>Percentage</th><th>Letter Grade</th><th>GPA (4.0)</th><th>Classification</th></tr></thead>
+          <tbody>
+            <tr><td>85–100</td><td><span class="badge badge-gold">A+</span></td><td>4.0</td><td>Outstanding</td></tr>
+            <tr><td>80–84</td><td><span class="badge badge-gold">A</span></td><td>4.0</td><td>Excellent</td></tr>
+            <tr><td>75–79</td><td><span class="badge badge-blue">B+</span></td><td>3.5</td><td>Very Good</td></tr>
+            <tr><td>71–74</td><td><span class="badge badge-blue">B</span></td><td>3.0</td><td>Good</td></tr>
+            <tr><td>68–70</td><td><span class="badge badge-green">C+</span></td><td>2.5</td><td>Above Average</td></tr>
+            <tr><td>64–67</td><td><span class="badge badge-green">C</span></td><td>2.0</td><td>Average</td></tr>
+            <tr><td>60–63</td><td><span class="badge badge-red">D</span></td><td>1.0</td><td>Passing</td></tr>
+            <tr><td>0–59</td><td><span class="badge badge-red">F</span></td><td>0.0</td><td>Failing</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="ref-table-uk" style="display:none;">
+        <table class="grade-table">
+          <thead><tr><th>Percentage</th><th>Classification</th><th>Equivalent GPA</th></tr></thead>
+          <tbody>
+            <tr><td>70–100</td><td><span class="badge badge-gold">First Class</span></td><td>3.7–4.0</td></tr>
+            <tr><td>60–69</td><td><span class="badge badge-blue">2:1 Upper Second</span></td><td>3.3–3.7</td></tr>
+            <tr><td>50–59</td><td><span class="badge badge-green">2:2 Lower Second</span></td><td>2.7–3.3</td></tr>
+            <tr><td>40–49</td><td><span class="badge badge-red">Third Class</span></td><td>2.0–2.7</td></tr>
+            <tr><td>0–39</td><td><span class="badge badge-red">Fail</span></td><td>0.0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== THESIS PROGRESS ===== -->
+  <div id="panel-thesis" class="panel">
+    <div class="section-title">Thesis / Research Progress</div>
+    <div class="section-desc">Track MS thesis milestones, research progress, and estimated completion timeline for mathematics graduate programs.</div>
+
+    <div class="card">
+      <div class="card-label">Program Info</div>
+      <div class="grid-3">
+        <div>
+          <label>Total Thesis Credits Required</label>
+          <input type="number" id="thesis-total" placeholder="e.g. 6" value="6">
+        </div>
+        <div>
+          <label>Credits Completed</label>
+          <input type="number" id="thesis-done" placeholder="e.g. 3">
+        </div>
+        <div>
+          <label>Program Start (Semester)</label>
+          <input type="text" id="thesis-start" placeholder="e.g. Fall 2023">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Research Milestones</div>
+      <div id="milestones">
+        <div class="course-row" style="grid-template-columns: 2fr 1fr auto; font-size:0.72rem; color:var(--muted); padding-bottom:6px;">
+          <span>Milestone</span><span>Status</span><span></span>
+        </div>
+      </div>
+      <div id="milestone-list"></div>
+      <div style="margin-top:14px; display:flex; gap:10px;">
+        <button class="btn btn-secondary" onclick="addMilestone()">+ Add Milestone</button>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="calcThesis()">Analyze Progress →</button>
+
+    <div class="result-box" id="thesis-result" style="margin-top:20px;">
+      <div id="thesis-content"></div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ===================== STATE =====================
+let courses = [];
+let gradeScale = '4';
+let milestones = [];
+
+// ===================== TABS =====================
+function switchTab(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ===================== GPA =====================
+function setScale(scale, el) {
+  gradeScale = scale;
+  document.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderCourses();
+}
+
+const gradeOptions4 = ['A','A-','B+','B','B-','C+','C','C-','D+','D','F'];
+const gradePoints4  = {A:4.0,'A-':3.7,'B+':3.3,B:3.0,'B-':2.7,'C+':2.3,C:2.0,'C-':1.7,'D+':1.3,D:1.0,F:0.0};
+const gradeOptions5 = ['A+','A','A-','B+','B','B-','C+','C','C-','D','F'];
+const gradePoints5  = {'A+':5.0,A:4.5,'A-':4.0,'B+':3.5,B:3.0,'B-':2.5,'C+':2.0,C:1.5,'C-':1.0,D:0.5,F:0.0};
+const gradeOptions10= ['10','9','8','7','6','5','4','3','2','1','0'];
+const gradePoints10 = {'10':10,'9':9,'8':8,'7':7,'6':6,'5':5,'4':4,'3':3,'2':2,'1':1,'0':0};
+
+function getOptions() {
+  if(gradeScale==='4') return gradeOptions4;
+  if(gradeScale==='5') return gradeOptions5;
+  return gradeOptions10;
+}
+function getPoints(g) {
+  if(gradeScale==='4') return gradePoints4[g]??0;
+  if(gradeScale==='5') return gradePoints5[g]??0;
+  return parseFloat(g)||0;
+}
+function getMax() { return gradeScale==='4'?4.0:gradeScale==='5'?5.0:10.0; }
+
+function addCourse() {
+  courses.push({ name: '', credits: 3, grade: getOptions()[1] });
+  renderCourses();
+}
+
+function clearCourses() { courses = []; renderCourses(); }
+
+function renderCourses() {
+  const el = document.getElementById('course-list');
+  if(courses.length === 0) {
+    el.innerHTML = `<div style="color:var(--muted);font-size:0.75rem;padding:16px 0;">No courses added. Click "Add Course" to begin.</div>`;
+    return;
+  }
+  el.innerHTML = courses.map((c, i) => `
+    <div class="course-row">
+      <input type="text" placeholder="Course name (e.g. Real Analysis)" value="${c.name}"
+        onchange="courses[${i}].name=this.value" style="font-size:0.78rem;">
+      <input type="number" placeholder="Credits" value="${c.credits}" min="1" max="6"
+        onchange="courses[${i}].credits=parseFloat(this.value)||3" style="font-size:0.78rem;">
+      <select onchange="courses[${i}].grade=this.value" style="font-size:0.78rem;">
+        ${getOptions().map(g => `<option value="${g}" ${g===c.grade?'selected':''}>${g}</option>`).join('')}
+      </select>
+      <button class="remove-btn" onclick="courses.splice(${i},1);renderCourses()">✕</button>
+    </div>
+  `).join('');
+}
+
+function calculateGPA() {
+  if(courses.length===0){alert('Add at least one course.');return;}
+  let totalPoints=0, totalCredits=0;
+  courses.forEach(c=>{
+    const cr=parseFloat(c.credits)||3;
+    totalPoints += getPoints(c.grade)*cr;
+    totalCredits += cr;
+  });
+  const semGPA = totalCredits>0 ? (totalPoints/totalCredits) : 0;
+  const max=getMax();
+
+  let cumGPA='N/A', cumLabel='';
+  const prevGPA=parseFloat(document.getElementById('prev-gpa').value)||0;
+  const prevCr=parseFloat(document.getElementById('prev-credits').value)||0;
+  if(prevCr>0){
+    const cumPts = semGPA*totalCredits + prevGPA*prevCr;
+    const cumCr = totalCredits+prevCr;
+    cumGPA = (cumPts/cumCr).toFixed(3);
+    cumLabel=`<div class="result-stat"><div class="result-stat-val" style="color:var(--accent2)">${cumGPA}</div><div class="result-stat-lbl">Cumulative GPA</div></div>
+    <div class="result-stat"><div class="result-stat-val">${(totalCredits+prevCr)}</div><div class="result-stat-lbl">Total Credits</div></div>`;
+  }
+
+  const pct = (semGPA/max*100).toFixed(1);
+  const honor = getHonors(semGPA, max);
+
+  document.getElementById('gpa-val').textContent = semGPA.toFixed(3);
+  document.getElementById('gpa-stats').innerHTML = `
+    <div class="result-stat">
+      <div class="result-stat-val" style="color:var(--success)">${totalCredits}</div>
+      <div class="result-stat-lbl">Semester Credits</div>
+    </div>
+    <div class="result-stat">
+      <div class="result-stat-val">${pct}%</div>
+      <div class="result-stat-lbl">Relative Score</div>
+    </div>
+    ${cumLabel}
+    <div class="result-stat">
+      <div class="result-stat-val" style="color:${honor.color}">${honor.title}</div>
+      <div class="result-stat-lbl">Academic Standing</div>
+    </div>
+  `;
+  const r=document.getElementById('gpa-result');r.classList.add('visible');
+}
+
+function getHonors(gpa, max) {
+  const r = gpa/max;
+  if(r>=0.95) return {title:"Summa Cum Laude",color:"var(--accent)"};
+  if(r>=0.88) return {title:"Magna Cum Laude",color:"var(--accent2)"};
+  if(r>=0.80) return {title:"Cum Laude",color:"var(--success)"};
+  if(r>=0.65) return {title:"Good Standing",color:"var(--text)"};
+  if(r>=0.50) return {title:"Satisfactory",color:"var(--warning)"};
+  return {title:"Academic Warning",color:"var(--accent3)"};
+}
+
+// init with 3 courses
+addCourse(); addCourse(); addCourse();
+
+// ===================== CREDITS =====================
+const progReqs = {
+  bs: { total:128, core:48, elective:24, gen:36, research:0, label:'BS Mathematics' },
+  ms: { total:33, core:18, elective:9, gen:0, research:6, label:'MS Mathematics' },
+  'bs-applied': { total:124, core:42, elective:24, gen:34, research:0, label:'BS Applied Math' },
+  'ms-applied': { total:30, core:15, elective:9, gen:0, research:6, label:'MS Applied Math' }
+};
+
+function updateProgramReqs(){ }
+
+function calculateCredits() {
+  const prog = document.getElementById('prog-type').value;
+  const req = progReqs[prog];
+  const core = parseFloat(document.getElementById('core-cr').value)||0;
+  const elec = parseFloat(document.getElementById('elective-cr').value)||0;
+  const gen  = parseFloat(document.getElementById('gen-cr').value)||0;
+  const res  = parseFloat(document.getElementById('research-cr').value)||0;
+  const lab  = parseFloat(document.getElementById('lab-cr').value)||0;
+  const tran = parseFloat(document.getElementById('transfer-cr').value)||0;
+  const total = core+elec+gen+res+lab+tran;
+  const remaining = Math.max(0, req.total-total);
+  const pct = Math.min(100,(total/req.total*100)).toFixed(1);
+
+  const makeBar = (done, needed, color) => {
+    const p = needed>0?Math.min(100,(done/needed*100)):100;
+    return `<div class="progress-bar"><div class="progress-fill" style="width:${p}%;background:${color}"></div></div>`;
+  };
+
+  document.getElementById('credit-content').innerHTML = `
+    <div class="result-label">${req.label} — Overall Progress</div>
+    <div class="result-main">${pct}%</div>
+    ${makeBar(total, req.total, 'var(--accent)')}
+    <div style="font-size:0.72rem;color:var(--muted);margin-top:6px;">${total} / ${req.total} credits completed · ${remaining} remaining</div>
+    <div class="result-grid">
+      <div class="result-stat">
+        <div class="result-stat-val" style="color:${core>=req.core?'var(--success)':'var(--accent3)'}">${core}/${req.core}</div>
+        <div class="result-stat-lbl">Core Credits</div>
+        ${makeBar(core,req.core,'var(--accent2)')}
+      </div>
+      <div class="result-stat">
+        <div class="result-stat-val" style="color:${elec>=req.elective?'var(--success)':'var(--warning)'}">${elec}/${req.elective}</div>
+        <div class="result-stat-lbl">Elective Credits</div>
+        ${makeBar(elec,req.elective,'var(--success)')}
+      </div>
+      ${req.gen>0?`<div class="result-stat">
+        <div class="result-stat-val">${gen}/${req.gen}</div>
+        <div class="result-stat-lbl">Gen Ed Credits</div>
+        ${makeBar(gen,req.gen,'var(--warning)')}
+      </div>`:''}
+      ${req.research>0?`<div class="result-stat">
+        <div class="result-stat-val">${res}/${req.research}</div>
+        <div class="result-stat-lbl">Research Credits</div>
+        ${makeBar(res,req.research,'var(--accent3)')}
+      </div>`:''}
+      <div class="result-stat">
+        <div class="result-stat-val">${tran}</div>
+        <div class="result-stat-lbl">Transfer Credits</div>
+      </div>
+    </div>
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);font-size:0.72rem;color:var(--muted);">
+      ${remaining===0?'<span style="color:var(--success)">✓ All credit requirements met. Eligible to graduate.</span>':`<span style="color:var(--warning)">⚠ ${remaining} more credits needed to complete the program.</span>`}
+    </div>
+  `;
+  document.getElementById('credit-result').classList.add('visible');
+}
+
+// ===================== STATISTICS =====================
+function calcStats() {
+  const raw = document.getElementById('stat-data').value;
+  const nums = raw.split(/[\s,]+/).map(Number).filter(v=>!isNaN(v)&&v!==undefined);
+  if(nums.length<2){alert('Enter at least 2 values.');return;}
+
+  nums.sort((a,b)=>a-b);
+  const n=nums.length;
+  const sum=nums.reduce((a,b)=>a+b,0);
+  const mean=sum/n;
+  const variance=nums.reduce((a,b)=>a+(b-mean)**2,0)/(n-1);
+  const sd=Math.sqrt(variance);
+  const min=nums[0], max=nums[n-1];
+  const range=max-min;
+  const q1=nums[Math.floor(n*0.25)];
+  const q3=nums[Math.floor(n*0.75)];
+  const iqr=q3-q1;
+  const median=n%2===0?(nums[n/2-1]+nums[n/2])/2:nums[Math.floor(n/2)];
+  const cv=(sd/mean*100).toFixed(2);
+
+  document.getElementById('stats-content').innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;">
+      ${[['n',n,'Count'],['Mean',mean.toFixed(4),'Average'],['Median',median.toFixed(4),'Middle Value'],
+         ['Mode','—','Most Frequent'],['Std Dev',sd.toFixed(4),'σ'],['Variance',variance.toFixed(4),'σ²'],
+         ['Min',min,'Minimum'],['Max',max,'Maximum'],['Range',range,'Max − Min'],
+         ['Q1',q1,'25th Pct'],['Q3',q3,'75th Pct'],['IQR',iqr,'Q3 − Q1'],['CV %',cv,'Coeff of Variation']
+        ].map(([lbl,val,sub])=>`
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;">
+          <div style="font-size:1.1rem;font-weight:700;color:var(--accent);font-family:'Syne',sans-serif;">${val}</div>
+          <div style="font-size:0.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-top:2px;">${lbl} · ${sub}</div>
+        </div>`).join('')}
+    </div>
+    <div class="formula-box" style="margin-top:14px;">σ² = Σ(xᵢ − x̄)² / (n−1) &nbsp;·&nbsp; σ = √σ² &nbsp;·&nbsp; CV = σ/x̄ × 100%</div>
+  `;
+  document.getElementById('stats-result').classList.add('visible');
+}
+
+function calcProb() {
+  const type=document.getElementById('dist-type').value;
+  const mu=parseFloat(document.getElementById('dist-mean').value)||0;
+  const sd=parseFloat(document.getElementById('dist-sd').value)||1;
+  const x=parseFloat(document.getElementById('dist-x').value)||0;
+
+  let z, p, info='';
+  if(type==='normal'){
+    z=(x-mu)/sd;
+    p=normCDF(z);
+    info=`Z-score: ${z.toFixed(4)} &nbsp;·&nbsp; P(X ≤ ${x}) = ${p.toFixed(4)} &nbsp;·&nbsp; P(X > ${x}) = ${(1-p).toFixed(4)}`;
+  } else if(type==='binomial'){
+    const n=Math.round(mu), pr=Math.min(1,Math.max(0,sd)), k=Math.round(x);
+    const binom=binomPDF(n,k,pr);
+    info=`P(X = ${k} | n=${n}, p=${pr}) = ${binom.toFixed(6)}`;
+  } else {
+    const lambda=mu, k=Math.round(x);
+    const pois=poissonPDF(lambda,k);
+    info=`P(X = ${k} | λ=${lambda}) = ${pois.toFixed(6)}`;
+  }
+
+  document.getElementById('prob-content').innerHTML=`<div style="font-size:0.85rem;line-height:1.8;">${info}</div>`;
+  document.getElementById('prob-result').classList.add('visible');
+}
+
+function normCDF(z){
+  const t=1/(1+0.2316419*Math.abs(z));
+  const d=0.3989423*Math.exp(-z*z/2);
+  const p=d*t*(0.3193815+t*(-0.3565638+t*(1.7814779+t*(-1.8212560+t*1.3302744))));
+  return z>0?1-p:p;
+}
+function factorial(n){let r=1;for(let i=2;i<=n;i++)r*=i;return r;}
+function binomPDF(n,k,p){return factorial(n)/(factorial(k)*factorial(n-k))*Math.pow(p,k)*Math.pow(1-p,n-k);}
+function poissonPDF(l,k){return Math.pow(l,k)*Math.exp(-l)/factorial(k);}
+
+// ===== MATRIX =====
+function buildMatrix(){
+  const s=parseInt(document.getElementById('mat-size').value);
+  let html='<div style="display:inline-grid;gap:6px;grid-template-columns:repeat('+s+',80px);">';
+  for(let i=0;i<s;i++)for(let j=0;j<s;j++)
+    html+=`<input type="number" id="m${i}${j}" placeholder="0" style="text-align:center;padding:8px;font-size:0.85rem;">`;
+  html+='</div>';
+  document.getElementById('matrix-grid').innerHTML=html;
+}
+buildMatrix();
+
+function getMatrix(){
+  const s=parseInt(document.getElementById('mat-size').value);
+  const m=[];
+  for(let i=0;i<s;i++){m.push([]);for(let j=0;j<s;j++)m[i].push(parseFloat(document.getElementById('m'+i+j).value)||0);}
+  return m;
+}
+function det2(m){return m[0][0]*m[1][1]-m[0][1]*m[1][0];}
+function det3(m){
+  return m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])
+        -m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])
+        +m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);
+}
+function trace(m){return m.reduce((s,r,i)=>s+r[i],0);}
+
+function calcMatrix(){
+  const m=getMatrix(), s=m.length;
+  const det=s===2?det2(m):det3(m);
+  const tr=trace(m);
+  const inv=Math.abs(det)>1e-10;
+
+  document.getElementById('matrix-content').innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+      <div><div style="font-size:1.4rem;font-weight:700;color:var(--accent);font-family:'Syne',sans-serif;">${det.toFixed(4)}</div><div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;">Determinant</div></div>
+      <div><div style="font-size:1.4rem;font-weight:700;color:var(--accent2);font-family:'Syne',sans-serif;">${tr.toFixed(4)}</div><div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;">Trace</div></div>
+      <div><div style="font-size:1rem;font-weight:700;color:${inv?'var(--success)':'var(--accent3)'};font-family:'Syne',sans-serif;">${inv?'Yes':'No'}</div><div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;">Invertible</div></div>
+    </div>
+    <div class="formula-box" style="margin-top:14px;">det(A) = ${det.toFixed(4)} &nbsp;·&nbsp; tr(A) = ${tr.toFixed(4)} &nbsp;·&nbsp; rank = ${inv?s:'< '+s}</div>
+  `;
+  document.getElementById('matrix-result').classList.add('visible');
+}
+
+// ===================== GRADE CONVERTER =====================
+const systems = {
+  us: [
+    {min:93,letter:'A',gpa4:4.0,gpa5:5.0},
+    {min:90,letter:'A-',gpa4:3.7,gpa5:4.7},
+    {min:87,letter:'B+',gpa4:3.3,gpa5:4.3},
+    {min:83,letter:'B',gpa4:3.0,gpa5:4.0},
+    {min:80,letter:'B-',gpa4:2.7,gpa5:3.7},
+    {min:77,letter:'C+',gpa4:2.3,gpa5:3.3},
+    {min:73,letter:'C',gpa4:2.0,gpa5:3.0},
+    {min:70,letter:'C-',gpa4:1.7,gpa5:2.7},
+    {min:67,letter:'D+',gpa4:1.3,gpa5:2.3},
+    {min:60,letter:'D',gpa4:1.0,gpa5:2.0},
+    {min:0,letter:'F',gpa4:0.0,gpa5:0.0},
+  ],
+  pk: [
+    {min:85,letter:'A+',gpa4:4.0,desc:'Outstanding'},
+    {min:80,letter:'A',gpa4:4.0,desc:'Excellent'},
+    {min:75,letter:'B+',gpa4:3.5,desc:'Very Good'},
+    {min:71,letter:'B',gpa4:3.0,desc:'Good'},
+    {min:68,letter:'C+',gpa4:2.5,desc:'Above Average'},
+    {min:64,letter:'C',gpa4:2.0,desc:'Average'},
+    {min:60,letter:'D',gpa4:1.0,desc:'Passing'},
+    {min:0,letter:'F',gpa4:0.0,desc:'Failing'},
+  ],
+  uk: [
+    {min:70,letter:'First Class',gpa4:4.0},
+    {min:60,letter:'2:1 Upper Second',gpa4:3.5},
+    {min:50,letter:'2:2 Lower Second',gpa4:3.0},
+    {min:40,letter:'Third Class',gpa4:2.0},
+    {min:0,letter:'Fail',gpa4:0.0},
+  ]
+};
+
+function convertGrade() {
+  const pct=parseFloat(document.getElementById('pct-input').value);
+  const sys=document.getElementById('conv-system').value;
+  if(isNaN(pct)||pct<0||pct>100){alert('Enter a valid percentage (0–100).');return;}
+
+  const scale=systems[sys];
+  const grade=scale.find(g=>pct>=g.min);
+  const badge=pct>=80?'badge-gold':pct>=65?'badge-blue':pct>=50?'badge-green':'badge-red';
+
+  document.getElementById('conv-content').innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px;">
+      <div><div style="font-size:2.5rem;font-family:'DM Serif Display',serif;color:var(--accent);">${pct}%</div><div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;">Input Score</div></div>
+      <div><div style="font-size:1.8rem;font-family:'Syne',sans-serif;font-weight:800;color:var(--text);">${grade.letter}</div><div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;">Letter Grade</div></div>
+      <div><div style="font-size:1.8rem;font-family:'Syne',sans-serif;font-weight:800;color:var(--accent2);">${grade.gpa4}</div><div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;">GPA (4.0)</div></div>
+      ${grade.desc?`<div><div style="font-size:1rem;font-weight:700;color:var(--success);">${grade.desc}</div><div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;">Classification</div></div>`:''}
+    </div>
+  `;
+  document.getElementById('conv-result').classList.add('visible');
+}
+
+function showRefTable(id, el) {
+  ['us','pk','uk'].forEach(x=>document.getElementById('ref-table-'+x).style.display='none');
+  document.getElementById('ref-table-'+id).style.display='block';
+  document.querySelectorAll('#panel-converter .scale-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ===================== THESIS =====================
+const defaultMilestones = [
+  'Topic Approval by Advisor',
+  'Literature Review Complete',
+  'Proposal Defense',
+  'Data Collection / Proofs',
+  'First Draft Submitted',
+  'Advisor Feedback Incorporated',
+  'Committee Review',
+  'Final Thesis Defense',
+  'Thesis Submitted to Graduate School'
+];
+
+function initMilestones(){
+  milestones = defaultMilestones.map(m=>({name:m,done:false}));
+  renderMilestones();
+}
+
+function renderMilestones(){
+  document.getElementById('milestone-list').innerHTML = milestones.map((m,i)=>`
+    <div class="course-row" style="grid-template-columns:auto 2fr 1fr auto;gap:10px;align-items:center;">
+      <input type="checkbox" ${m.done?'checked':''} onchange="milestones[${i}].done=this.checked" style="accent-color:var(--accent);width:16px;height:16px;cursor:pointer;">
+      <input type="text" value="${m.name}" onchange="milestones[${i}].name=this.value" style="font-size:0.78rem;">
+      <span style="font-size:0.68rem;color:${m.done?'var(--success)':'var(--muted)'};">${m.done?'✓ Done':'Pending'}</span>
+      <button class="remove-btn" onclick="milestones.splice(${i},1);renderMilestones()">✕</button>
+    </div>
+  `).join('');
+}
+
+function addMilestone(){
+  milestones.push({name:'New Milestone',done:false});
+  renderMilestones();
+}
+initMilestones();
+
+function calcThesis(){
+  const total=parseFloat(document.getElementById('thesis-total').value)||6;
+  const done=parseFloat(document.getElementById('thesis-done').value)||0;
+  const start=document.getElementById('thesis-start').value||'—';
+  const pct=Math.min(100,(done/total*100)).toFixed(1);
+  const doneMs=milestones.filter(m=>m.done).length;
+  const totalMs=milestones.length;
+  const msPct=totalMs>0?(doneMs/totalMs*100).toFixed(1):0;
+
+  document.getElementById('thesis-content').innerHTML=`
+    <div class="result-label">Thesis Progress Overview</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:20px;">
+      <div>
+        <div class="result-main" style="font-size:2rem;">${pct}%</div>
+        <div class="result-label">Credit Hours</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:var(--accent)"></div></div>
+        <div style="font-size:0.7rem;color:var(--muted);margin-top:4px;">${done}/${total} credits</div>
+      </div>
+      <div>
+        <div class="result-main" style="font-size:2rem;">${msPct}%</div>
+        <div class="result-label">Milestones</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${msPct}%;background:var(--accent2)"></div></div>
+        <div style="font-size:0.7rem;color:var(--muted);margin-top:4px;">${doneMs}/${totalMs} complete</div>
+      </div>
+    </div>
+    <div class="result-grid">
+      <div class="result-stat"><div class="result-stat-val">${start}</div><div class="result-stat-lbl">Started</div></div>
+      <div class="result-stat"><div class="result-stat-val">${total-done}</div><div class="result-stat-lbl">Credits Remaining</div></div>
+      <div class="result-stat"><div class="result-stat-val">${totalMs-doneMs}</div><div class="result-stat-lbl">Milestones Left</div></div>
+      <div class="result-stat"><div class="result-stat-val" style="color:${parseFloat(pct)>=50&&parseFloat(msPct)>=50?'var(--success)':'var(--warning)'}">
+        ${parseFloat(pct)>=80&&parseFloat(msPct)>=80?'On Track 🎓':parseFloat(pct)>=50?'In Progress':'Early Stage'}
+      </div><div class="result-stat-lbl">Status</div></div>
+    </div>
+  `;
+  document.getElementById('thesis-result').classList.add('visible');
+}
+</script>
+</body>
+</html>
