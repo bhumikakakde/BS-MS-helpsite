@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MathCalc — BS/MS Program Info</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@300;400;600&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #07070e;
+  --surface: #0f0f18;
+  --card: #13131e;
+  --border: #252535;
+  --accent: #ff6eb4;
+  --accent2: #ff9ed2;
+  --accent3: #c94d8a;
+  --text: #e8e8f0;
+  --muted: #7a7a8e;
+  --success: #ff85c2;
+  --warning: #ffb86c;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,158,210,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,158,210,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: 0;
+}
+.orb1 { width: 500px; height: 500px; background: rgba(255,110,180,0.06); top: -150px; right: -150px; }
+.orb2 { width: 400px; height: 400px; background: rgba(255,158,210,0.05); bottom: 0; left: -100px; }
+.orb3 { width: 300px; height: 300px; background: rgba(201,77,138,0.04); top: 60%; left: 50%; }
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(7,7,14,0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+}
+
+.nav-logo {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.4rem;
+  color: var(--accent);
+}
+.nav-logo span { color: var(--text); font-style: italic; }
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--accent); }
+
+.nav-badge {
+  font-size: 0.62rem;
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+}
+
+/* MAIN CONTENT */
+main {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 32px 120px;
+}
+
+/* ===== HERO ===== */
+.hero {
+  padding: 140px 0 100px;
+  position: relative;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid rgba(255,110,180,0.3);
+  padding: 5px 14px;
+  border-radius: 20px;
+  margin-bottom: 28px;
+}
+.hero-eyebrow::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+
+.hero h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+.hero h1 em {
+  color: var(--accent);
+  font-style: italic;
+}
+
+.hero-sub {
+  font-size: 0.9rem;
+  color: var(--muted);
+  max-width: 540px;
+  line-height: 1.8;
+  margin-bottom: 48px;
+}
+
+.hero-ctas {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 28px;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #07070e;
+}
+.btn-primary:hover { background: #ff8ec2; transform: translateY(-1px); }
+.btn-outline {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+.hero-stats {
+  display: flex;
+  gap: 40px;
+  margin-top: 64px;
+  padding-top: 40px;
+  border-top: 1px solid var(--border);
+}
+.hero-stat-val {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2.4rem;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.hero-stat-lbl {
+  font-size: 0.62rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+/* Large decorative text */
+.hero-bg-text {
+  position: absolute;
+  right: -20px;
+  top: 100px;
+  font-family: 'DM Serif Display', serif;
+  font-size: 220px;
+  color: rgba(255,110,180,0.04);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: -0.05em;
+}
+
+/* ===== SECTION GENERIC ===== */
+section {
+  padding: 80px 0;
+  border-top: 1px solid var(--border);
+}
+
+.section-tag {
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.section-heading {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, var(--text) 0%, var(--muted) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.section-intro {
+  font-size: 0.82rem;
+  color: var(--muted);
+  max-width: 560px;
+  line-height: 1.8;
+  margin-bottom: 56px;
+}
+
+/* ===== OVERVIEW CARDS ===== */
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 48px;
+}
+.ov-card {
+  background: var(--card);
+  padding: 32px 28px;
+  transition: background 0.2s;
+}
+.ov-card:hover { background: #1a1a28; }
+.ov-number {
+  font-family: 'DM Serif Display', serif;
+  font-size: 3rem;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.ov-label {
+  font-size: 0.68rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  line-height: 1.5;
+}
+
+/* ===== PROGRAMS ===== */
+.programs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.prog-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 36px 32px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.prog-card:hover { border-color: rgba(255,110,180,0.3); }
+
+.prog-card.featured {
+  border-color: rgba(255,158,210,0.3);
+  background: linear-gradient(135deg, #13131e 0%, #13182e 100%);
+}
+.prog-card.featured::after {
+  content: 'Graduate';
+  position: absolute;
+  top: 20px; right: 20px;
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent2);
+  border: 1px solid rgba(255,158,210,0.3);
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.prog-icon {
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+.prog-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.prog-credits {
+  font-family: 'DM Serif Display', serif;
+  font-size: 3.5rem;
+  color: var(--accent);
+  line-height: 1;
+}
+.prog-credit-lbl {
+  font-size: 0.65rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 28px;
+}
+
+.prog-divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+.prog-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 0.72rem;
+  border-bottom: 1px solid rgba(37,37,53,0.5);
+}
+.prog-detail-row:last-child { border-bottom: none; }
+.prog-detail-key { color: var(--muted); }
+.prog-detail-val { color: var(--text); font-weight: 600; }
+
+.tracks-label {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  margin: 20px 0 10px;
+}
+.tracks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.track {
+  font-size: 0.62rem;
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+}
+
+/* ===== TOOLS ===== */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.tool-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px 28px;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.tool-card:hover {
+  border-color: rgba(255,110,180,0.25);
+  transform: translateY(-2px);
+}
+
+.tool-number {
+  font-family: 'DM Serif Display', serif;
+  font-size: 5rem;
+  position: absolute;
+  top: -10px; right: 20px;
+  color: rgba(255,110,180,0.06);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.tool-tag {
+  display: inline-block;
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+
+.tool-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.tool-desc {
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
+
+.tool-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.tool-features li {
+  display: flex;
+  gap: 10px;
+  font-size: 0.68rem;
+  color: var(--muted);
+  align-items: flex-start;
+}
+.tool-features li::before {
+  content: '→';
+  color: var(--accent);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ===== GPA TABLE ===== */
+.gpa-scales {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.scale-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.scale-header {
+  padding: 16px 20px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.scale-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.scale-table th {
+  padding: 10px 16px;
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.scale-table td {
+  padding: 9px 16px;
+  font-size: 0.7rem;
+  border-bottom: 1px solid rgba(37,37,53,0.4);
+}
+.scale-table tr:last-child td { border-bottom: none; }
+.scale-table tr:hover td { background: rgba(255,110,180,0.03); }
+
+.grade-badge {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 20px;
+  letter-spacing: 0.05em;
+}
+.gb-gold { background: rgba(255,110,180,0.15); color: var(--accent); border: 1px solid rgba(255,110,180,0.25); }
+.gb-blue { background: rgba(255,158,210,0.12); color: var(--accent2); border: 1px solid rgba(255,158,210,0.25); }
+.gb-green { background: rgba(255,133,194,0.12); color: var(--success); border: 1px solid rgba(255,133,194,0.25); }
+.gb-red { background: rgba(201,77,138,0.12); color: var(--accent3); border: 1px solid rgba(201,77,138,0.25); }
+
+/* ===== GRADE CONVERSION TABLE ===== */
+.grade-systems {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+
+/* ===== MILESTONES ===== */
+.milestone-track {
+  position: relative;
+  padding-left: 36px;
+}
+.milestone-track::before {
+  content: '';
+  position: absolute;
+  left: 10px; top: 20px; bottom: 20px;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--accent), var(--accent2), var(--accent3));
+  opacity: 0.3;
+}
+
+.milestone-item {
+  position: relative;
+  padding: 20px 0 20px 24px;
+  border-bottom: 1px solid rgba(37,37,53,0.5);
+}
+.milestone-item:last-child { border-bottom: none; }
+.milestone-item::before {
+  content: '';
+  position: absolute;
+  left: -30px; top: 26px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--border);
+  border: 2px solid var(--accent);
+}
+.milestone-item.done::before {
+  background: var(--accent);
+}
+
+.ms-num {
+  font-size: 0.58rem;
+  color: var(--accent);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.ms-title {
+  font-size: 0.82rem;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.ms-desc {
+  font-size: 0.68rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* ===== STATS SECTION ===== */
+.stats-features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.stat-feat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 24px;
+}
+.stat-feat-icon {
+  font-size: 1.6rem;
+  margin-bottom: 16px;
+  display: block;
+}
+.stat-feat-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.stat-feat-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.stat-feat-list li {
+  font-size: 0.68rem;
+  color: var(--muted);
+  display: flex;
+  gap: 8px;
+}
+.stat-feat-list li::before { content: '·'; color: var(--accent); }
+
+.formula-block {
+  background: rgba(7,7,14,0.8);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent2);
+  border-radius: 0 8px 8px 0;
+  padding: 16px 20px;
+  font-size: 0.75rem;
+  color: var(--accent2);
+  font-style: italic;
+  margin-top: 20px;
+  line-height: 1.8;
+}
+
+/* ===== DESIGN SECTION ===== */
+.design-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.design-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+}
+.design-card h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.design-card p {
+  font-size: 0.7rem;
+  color: var(--muted);
+  line-height: 1.8;
+}
+.color-swatches {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+.swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.swatch-dot {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+}
+.swatch-lbl {
+  font-size: 0.55rem;
+  color: var(--muted);
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+
+.font-demo {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.font-sample { border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+.font-sample:last-child { border-bottom: none; }
+.font-name { font-size: 0.58rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+
+/* ===== CREDIT REQUIREMENTS TABLE ===== */
+.req-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.72rem;
+}
+.req-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+.req-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(37,37,53,0.4);
+}
+.req-table tr:last-child td { border-bottom: none; }
+.req-table tr:hover td { background: rgba(255,110,180,0.03); }
+
+/* ===== HONORS ===== */
+.honors-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 40px;
+}
+.honor-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px 20px;
+  text-align: center;
+}
+.honor-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+}
+.honor-range {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.honor-pct {
+  font-size: 0.65rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--border);
+  padding: 40px 32px;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-logo {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.2rem;
+  color: var(--accent);
+}
+.footer-logo span { color: var(--text); font-style: italic; }
+.footer-info {
+  font-size: 0.62rem;
+  color: var(--muted);
+  text-align: right;
+  line-height: 1.7;
+}
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.7s ease both; }
+.fade-up-1 { animation-delay: 0.1s; }
+.fade-up-2 { animation-delay: 0.2s; }
+.fade-up-3 { animation-delay: 0.3s; }
+.fade-up-4 { animation-delay: 0.4s; }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  main { padding: 0 20px 80px; }
+  .hero { padding: 100px 0 60px; }
+  .hero-bg-text { display: none; }
+  .overview-grid { grid-template-columns: 1fr 1fr; }
+  .programs-grid, .gpa-scales, .grade-systems, .stats-features, .design-grid, .honors-grid { grid-template-columns: 1fr; }
+  .hero-stats { gap: 24px; flex-wrap: wrap; }
+  footer { flex-direction: column; gap: 16px; text-align: center; }
+  .footer-info { text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Math<span>Calc</span></div>
+  <ul class="nav-links">
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#programs">Programs</a></li>
+    <li><a href="#tools">Tools</a></li>
+    <li><a href="#gpa">GPA Scales</a></li>
+    <li><a href="#grades">Grade Systems</a></li>
+    <li><a href="#thesis">Thesis</a></li>
+    <li><a href="#design">Design</a></li>
+  </ul>
+  <div class="nav-badge">Department of Mathematics</div>
+</nav>
+
+<main>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-bg-text">∑</div>
+
+    <div class="hero-eyebrow fade-up">BS / MS Program Calculator</div>
+
+    <h1 class="fade-up fade-up-1">
+      The Complete<br><em>Academic</em> Toolkit<br>for Math Students
+    </h1>
+
+    <p class="hero-sub fade-up fade-up-2">
+      MathCalc is a single-file, zero-dependency web application built for undergraduate and graduate mathematics students. Track GPA, monitor credit progress, compute statistics, convert grades across global systems, and manage thesis milestones — all in one dark-themed calculator suite.
+    </p>
+
+    <div class="hero-ctas fade-up fade-up-3">
+      <a href="#tools" class="btn btn-primary">Explore All Tools →</a>
+      <a href="#programs" class="btn btn-outline">View Programs</a>
+    </div>
+
+    <div class="hero-stats fade-up fade-up-4">
+      <div>
+        <div class="hero-stat-val">5</div>
+        <div class="hero-stat-lbl">Calculator Tools</div>
+      </div>
+      <div>
+        <div class="hero-stat-val">4</div>
+        <div class="hero-stat-lbl">Degree Programs</div>
+      </div>
+      <div>
+        <div class="hero-stat-val">3</div>
+        <div class="hero-stat-lbl">Grading Systems</div>
+      </div>
+      <div>
+        <div class="hero-stat-val">9</div>
+        <div class="hero-stat-lbl">Thesis Milestones</div>
+      </div>
+      <div>
+        <div class="hero-stat-val">0</div>
+        <div class="hero-stat-lbl">External Dependencies</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERVIEW -->
+  <section id="overview">
+    <div class="section-tag">What is MathCalc</div>
+    <h2 class="section-heading">Everything a math student needs</h2>
+    <p class="section-intro">
+      From calculating your semester GPA to tracking how many thesis credits remain, MathCalc handles all the administrative and academic calculations that mathematics students deal with every term.
+    </p>
+
+    <div class="overview-grid">
+      <div class="ov-card">
+        <div class="ov-number">3</div>
+        <div class="ov-label">GPA Scales<br>4.0 · 5.0 · 10-pt</div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-number">6</div>
+        <div class="ov-label">Credit Categories<br>tracked per program</div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-number">13</div>
+        <div class="ov-label">Statistics<br>metrics computed</div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-number">3</div>
+        <div class="ov-label">Global Grade<br>Conversion Systems</div>
+      </div>
+    </div>
+
+    <div class="design-grid" style="margin-top:0;">
+      <div class="design-card">
+        <h4>Single HTML file</h4>
+        <p>No build tools, no npm, no frameworks. Open in any browser and it works instantly. All JavaScript and CSS are embedded — perfect for offline use on campus or at home.</p>
+      </div>
+      <div class="design-card">
+        <h4>Fully responsive</h4>
+        <p>Designed to work on mobile phones, tablets, and desktops. The tab navigation collapses vertically on small screens and all grids reflow to single column automatically.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROGRAMS -->
+  <section id="programs">
+    <div class="section-tag">Academic Programs</div>
+    <h2 class="section-heading">Four degree tracks supported</h2>
+    <p class="section-intro">
+      MathCalc is designed for both undergraduate and graduate mathematics students, covering pure and applied tracks with accurate credit hour requirements for each.
+    </p>
+
+    <div class="programs-grid">
+      <!-- BS Math -->
+      <div class="prog-card">
+        <div class="prog-icon">Undergraduate · 4-Year</div>
+        <div class="prog-title">BS Mathematics</div>
+        <div class="prog-credits">120–128</div>
+        <div class="prog-credit-lbl">Total Credit Hours Required</div>
+
+        <div class="prog-divider"></div>
+
+        <div class="prog-detail-row">
+          <span class="prog-detail-key">Core Math Credits</span>
+          <span class="prog-detail-val">48 cr</span>
+        </div>
+        <div class="prog-detail-row">
+          <span class="prog-detail-key">Elective Credits</span>
+          <span class="prog-detail-val">24 cr</span>
+        </div>
+        <div class="prog-detail-row">
+          <span class="prog-detail-key">General Education</span>
+          <span class="prog-detail-val">36 cr</span>
+        </div>
+        <div class="prog-detail-row">
+          <span class="prog-detail-key">Research / Thesis</span>
+          <span class="prog-detail-val">Optional</span>
+        </div>
+        <div class="prog-detail-row">
+          <span class="prog-detail-key">Lab / Seminar</span>
+          <span class="prog-detail-val">Included</span>
+        </div>
+        <div class="prog-detail-row">
+          <span class="prog-detail-key">Transfer Credits</span>
+          <span class="prog-detail-val">Accepted</span>
+        </div>
+
+        <div class="tracks-label">Available Concentrations</div>
+        <div class="tracks">
+          <span class="track">Pure Mathematics</span>
+          <span class="track">Applied Mathematics</span>
+          <span class="track">Statistics</span>
+          <span class="track">Computational Math</span>
+          <span class="track">Mathematical Physics</span>
+        </div>
+      </div>
+
+      <!-- MS Math -->
+      <div class="prog-card featured">
+        <div class="prog-icon">Graduate · 1–2 Year</div>
+        <div class="prog-title">MS Mathematics</div>
+        <div class="prog-credits">30–36</div>
+        <div class="prog-credit-lbl">Total Credit Hours Required</div>
+
+        <div class="prog-divider"></div>
+
+        <div class="prog-detail-row">
+          <span class="prog-detail-key">Core Math Credits</span>
+          <span class="prog-detail-val">18 cr</span>
+        </div>
+        <div class="prog-detail-row">
+          <span class="prog-detail-key">Elective Credits</span>
+          <span class="prog-detail-val">9 cr</span>
+        </div>
+        <div class="prog-detail-row">
+          <span class="prog-detail-key">General Education</span>
+          <span class="prog-detail-val">Not Required</span>
+        </div>
+        <div class="prog-detail-row">
+          <span class="prog-detail-key">Thesis Credits</span>
+          <span class="prog-detail-val">6 cr</span>
+        </div>
+        <div class="prog-detail-row">
+          <span class="prog-detail-key">Lab / Seminar</span>
+          <span class="prog-detail-val">Included</span>
+        </div>
+        <div class="prog-detail-row">
+          <span class="prog-detail-key">Transfer Credits</span>
+          <span class="prog-detail-val">Accepted</span>
+        </div>
+
+        <div class="tracks-label">Available Concentrations</div>
+        <div class="tracks">
+          <span class="track">Pure Mathematics</span>
+          <span class="track">Applied Mathematics</span>
+          <span class="track">Statistics</span>
+          <span class="track">Computational Math</span>
+          <span class="track">Mathematical Physics</span>
+        </div>
+      </div>
+
+      <!-- BS Applied -->
+      <div class="prog-card">
+        <div class="prog-icon">Undergraduate · 4-Year</div>
+        <div class="prog-title">BS Applied Mathematics</div>
+        <div class="prog-credits">124</div>
+        <div class="prog-credit-lbl">Total Credit Hours Required</div>
+
+        <div class="prog-divider"></div>
+
+        <div class="prog-detail-row">
+          <span class="prog-detail-key">Core Math Credits</span>
+          <span class="prog-detail-val">42 cr</span>
+        </div>
+        <div class="prog-detail-row">
+          <span class="prog-detail-key">Elective Credits</span>
+          <span class="prog-detail-val">24 cr</span>
+        </div>
+        <div class="prog-detail-row">
+          <span class="prog-detail-key">General Education</span>
+          <span class="prog-detail-val">34 cr</span>
+        </div>
+        <div class="prog-detail-row">
+          <span class="prog-detail-key">Research / Thesis</span>
+          <span class="prog-detail-val">Optional</span>
+        </div>
+      </div>
+
+      <!-- MS Applied -->
+      <div class="prog-card featured">
+        <div class="prog-icon">Graduate · 1–2 Year</div>
+        <div class="prog-title">MS Applied Mathematics</div>
+        <div class="prog-credits">30</div>
+        <div class="prog-credit-lbl">Total Credit Hours Required</div>
+
+        <div class="prog-divider"></div>
+
+        <div class="prog-detail-row">
+          <span class="prog-detail-key">Core Math Credits</span>
+          <span class="prog-detail-val">15 cr</span>
+        </div>
+        <div class="prog-detail-row">
+          <span class="prog-detail-key">Elective Credits</span>
+          <span class="prog-detail-val">9 cr</span>
+        </div>
+        <div class="prog-detail-row">
+          <span class="prog-detail-key">General Education</span>
+          <span class="prog-detail-val">Not Required</span>
+        </div>
+        <div class="prog-detail-row">
+          <span class="prog-detail-key">Thesis Credits</span>
+          <span class="prog-detail-val">6 cr</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Credit req table -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;">
+      <div style="padding:20px 24px;background:var(--surface);border-bottom:1px solid var(--border);font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);">Credit Requirements Summary</div>
+      <table class="req-table">
+        <thead>
+          <tr>
+            <th>Program</th>
+            <th>Total</th>
+            <th>Core</th>
+            <th>Elective</th>
+            <th>Gen Ed</th>
+            <th>Research</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>BS Mathematics</td>
+            <td style="color:var(--accent)">128 cr</td>
+            <td>48</td><td>24</td><td>36</td><td>—</td>
+          </tr>
+          <tr>
+            <td>MS Mathematics</td>
+            <td style="color:var(--accent2)">33 cr</td>
+            <td>18</td><td>9</td><td>—</td><td>6</td>
+          </tr>
+          <tr>
+            <td>BS Applied Mathematics</td>
+            <td style="color:var(--accent)">124 cr</td>
+            <td>42</td><td>24</td><td>34</td><td>—</td>
+          </tr>
+          <tr>
+            <td>MS Applied Mathematics</td>
+            <td style="color:var(--accent2)">30 cr</td>
+            <td>15</td><td>9</td><td>—</td><td>6</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TOOLS -->
+  <section id="tools">
+    <div class="section-tag">Calculator Tools</div>
+    <h2 class="section-heading">Five powerful tools, one file</h2>
+    <p class="section-intro">
+      Each tool is accessible via a tab in the navigation bar. Results animate in on calculation and can be recalculated at any time.
+    </p>
+
+    <div class="tools-grid">
+
+      <!-- GPA -->
+      <div class="tool-card">
+        <div class="tool-number">01</div>
+        <div class="tool-tag gb-gold">Tab 1</div>
+        <div class="tool-title">GPA Calculator</div>
+        <p class="tool-desc">
+          Calculate semester GPA from any number of courses, then optionally compute a running cumulative GPA by entering prior credits and GPA. Supports three grading scales.
+        </p>
+        <ul class="tool-features">
+          <li>Add unlimited courses with custom names, credit hours, and letter grades</li>
+          <li>Switch between 4.0, 5.0, and 10-point grading scales on the fly</li>
+          <li>Enter previous cumulative GPA and credits to get updated overall GPA</li>
+          <li>Academic standing indicator: Summa Cum Laude, Magna Cum Laude, Cum Laude, Good Standing, Satisfactory, Academic Warning</li>
+          <li>Shows semester credits, relative score percentage, and total credits</li>
+        </ul>
+      </div>
+
+      <!-- Credit Tracker -->
+      <div class="tool-card">
+        <div class="tool-number">02</div>
+        <div class="tool-tag gb-green">Tab 2</div>
+        <div class="tool-title">Credit Hour Tracker</div>
+        <p class="tool-desc">
+          Monitor degree completion progress across all credit categories with visual progress bars and per-category breakdowns.
+        </p>
+        <ul class="tool-features">
+          <li>Choose from BS Math, MS Math, BS Applied, or MS Applied programs</li>
+          <li>Enter credits in 6 categories: Core, Elective, General Ed, Research, Lab/Seminar, Transfer</li>
+          <li>Overall percentage progress bar toward degree total</li>
+          <li>Per-category colored progress bars vs. required amounts</li>
+          <li>Eligibility notice when all requirements are met</li>
+          <li>Remaining credits calculation and warning when short</li>
+        </ul>
+      </div>
+
+      <!-- Stats -->
+      <div class="tool-card">
+        <div class="tool-number">03</div>
+        <div class="tool-tag gb-blue">Tab 3</div>
+        <div class="tool-title">Statistics Tools</div>
+        <p class="tool-desc">
+          Three statistical calculators: descriptive statistics, probability distributions, and matrix operations — covering common needs in math coursework.
+        </p>
+        <ul class="tool-features">
+          <li>Descriptive stats: Mean, Median, Std Dev, Variance, Min, Max, Range, Q1, Q3, IQR, CV%, Count</li>
+          <li>Normal distribution: Z-score, P(X≤x), P(X>x)</li>
+          <li>Binomial distribution: P(X=k | n, p)</li>
+          <li>Poisson distribution: P(X=k | λ)</li>
+          <li>Matrix operations: 2×2 and 3×3 determinant, trace, invertibility check</li>
+          <li>Formulas displayed alongside every result</li>
+        </ul>
+      </div>
+
+      <!-- Grade Converter -->
+      <div class="tool-card">
+        <div class="tool-number">04</div>
+        <div class="tool-tag gb-red">Tab 4</div>
+        <div class="tool-title">Grade Converter</div>
+        <p class="tool-desc">
+          Convert any percentage score to letter grade and GPA points under three international grading systems, with full reference tables for each.
+        </p>
+        <ul class="tool-features">
+          <li>Enter percentage (0–100) and select grading system</li>
+          <li>US Standard: A/B/C/D/F with +/- grades on 4.0 scale</li>
+          <li>Pakistan HEC: A+/A/B+/B/C+/C/D/F on 4.0 scale with descriptors</li>
+          <li>UK System: First Class / Upper Second / Lower Second / Third / Fail</li>
+          <li>Color-coded result badges: gold (≥80%), blue (≥65%), green (≥50%), red (below)</li>
+          <li>Complete reference tables viewable for all three systems</li>
+        </ul>
+      </div>
+
+      <!-- Thesis -->
+      <div class="tool-card">
+        <div class="tool-number">05</div>
+        <div class="tool-tag" style="background:rgba(255,158,210,0.12);color:var(--accent2);border:1px solid rgba(255,158,210,0.25);">Tab 5</div>
+        <div class="tool-title">Thesis Progress</div>
+        <p class="tool-desc">
+          Track MS thesis completion by monitoring credit hours and research milestones, with a dynamic progress overview and status indicator.
+        </p>
+        <ul class="tool-features">
+          <li>Enter total thesis credits required and credits completed so far</li>
+          <li>Record program start semester for reference</li>
+          <li>9 pre-loaded default milestones covering the full thesis journey</li>
+          <li>Check off milestones, edit names, remove, or add custom ones</li>
+          <li>Dual progress bars: credit progress + milestone completion %</li>
+          <li>Status indicator: Early Stage / In Progress / On Track 🎓</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- GPA SCALES -->
+  <section id="gpa">
+    <div class="section-tag">Grading Scales</div>
+    <h2 class="section-heading">Three GPA systems supported</h2>
+    <p class="section-intro">
+      The GPA Calculator supports three grading scales. Switch between them at any time — grade options in the course list update instantly.
+    </p>
+
+    <div class="gpa-scales">
+      <!-- 4.0 -->
+      <div class="scale-card">
+        <div class="scale-header">4.0 Scale (US Standard)</div>
+        <table class="scale-table">
+          <thead><tr><th>Grade</th><th>GPA Points</th></tr></thead>
+          <tbody>
+            <tr><td><span class="grade-badge gb-gold">A</span></td><td>4.0</td></tr>
+            <tr><td><span class="grade-badge gb-gold">A−</span></td><td>3.7</td></tr>
+            <tr><td><span class="grade-badge gb-blue">B+</span></td><td>3.3</td></tr>
+            <tr><td><span class="grade-badge gb-blue">B</span></td><td>3.0</td></tr>
+            <tr><td><span class="grade-badge gb-blue">B−</span></td><td>2.7</td></tr>
+            <tr><td><span class="grade-badge gb-green">C+</span></td><td>2.3</td></tr>
+            <tr><td><span class="grade-badge gb-green">C</span></td><td>2.0</td></tr>
+            <tr><td><span class="grade-badge gb-green">C−</span></td><td>1.7</td></tr>
+            <tr><td><span class="grade-badge gb-red">D+</span></td><td>1.3</td></tr>
+            <tr><td><span class="grade-badge gb-red">D</span></td><td>1.0</td></tr>
+            <tr><td><span class="grade-badge gb-red">F</span></td><td>0.0</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 5.0 -->
+      <div class="scale-card">
+        <div class="scale-header">5.0 Scale</div>
+        <table class="scale-table">
+          <thead><tr><th>Grade</th><th>GPA Points</th></tr></thead>
+          <tbody>
+            <tr><td><span class="grade-badge gb-gold">A+</span></td><td>5.0</td></tr>
+            <tr><td><span class="grade-badge gb-gold">A</span></td><td>4.5</td></tr>
+            <tr><td><span class="grade-badge gb-gold">A−</span></td><td>4.0</td></tr>
+            <tr><td><span class="grade-badge gb-blue">B+</span></td><td>3.5</td></tr>
+            <tr><td><span class="grade-badge gb-blue">B</span></td><td>3.0</td></tr>
+            <tr><td><span class="grade-badge gb-blue">B−</span></td><td>2.5</td></tr>
+            <tr><td><span class="grade-badge gb-green">C+</span></td><td>2.0</td></tr>
+            <tr><td><span class="grade-badge gb-green">C</span></td><td>1.5</td></tr>
+            <tr><td><span class="grade-badge gb-green">C−</span></td><td>1.0</td></tr>
+            <tr><td><span class="grade-badge gb-red">D</span></td><td>0.5</td></tr>
+            <tr><td><span class="grade-badge gb-red">F</span></td><td>0.0</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 10-point -->
+      <div class="scale-card">
+        <div class="scale-header">10-Point Scale</div>
+        <table class="scale-table">
+          <thead><tr><th>Grade</th><th>Points</th></tr></thead>
+          <tbody>
+            <tr><td><span class="grade-badge gb-gold">10</span></td><td>10.0</td></tr>
+            <tr><td><span class="grade-badge gb-gold">9</span></td><td>9.0</td></tr>
+            <tr><td><span class="grade-badge gb-blue">8</span></td><td>8.0</td></tr>
+            <tr><td><span class="grade-badge gb-blue">7</span></td><td>7.0</td></tr>
+            <tr><td><span class="grade-badge gb-green">6</span></td><td>6.0</td></tr>
+            <tr><td><span class="grade-badge gb-green">5</span></td><td>5.0</td></tr>
+            <tr><td><span class="grade-badge gb-red">4</span></td><td>4.0</td></tr>
+            <tr><td><span class="grade-badge gb-red">3</span></td><td>3.0</td></tr>
+            <tr><td><span class="grade-badge gb-red">2</span></td><td>2.0</td></tr>
+            <tr><td><span class="grade-badge gb-red">1</span></td><td>1.0</td></tr>
+            <tr><td><span class="grade-badge gb-red">0</span></td><td>0.0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Academic Standing -->
+    <div class="section-tag" style="margin-top:40px;">Academic Standing</div>
+    <p style="font-size:0.72rem;color:var(--muted);margin-bottom:20px;">GPA Calculator automatically assigns an academic standing label based on relative performance (GPA ÷ scale maximum).</p>
+    <div class="honors-grid">
+      <div class="honor-card">
+        <div class="honor-title" style="color:var(--accent)">Summa Cum Laude</div>
+        <div class="honor-range">≥ 95% of max GPA</div>
+        <div class="honor-pct gb-gold">4.0 Scale: ≥ 3.80</div>
+      </div>
+      <div class="honor-card">
+        <div class="honor-title" style="color:var(--accent2)">Magna Cum Laude</div>
+        <div class="honor-range">≥ 88% of max GPA</div>
+        <div class="honor-pct gb-blue">4.0 Scale: ≥ 3.52</div>
+      </div>
+      <div class="honor-card">
+        <div class="honor-title" style="color:var(--success)">Cum Laude</div>
+        <div class="honor-range">≥ 80% of max GPA</div>
+        <div class="honor-pct gb-green">4.0 Scale: ≥ 3.20</div>
+      </div>
+      <div class="honor-card">
+        <div class="honor-title" style="color:var(--text)">Good Standing</div>
+        <div class="honor-range">≥ 65% of max GPA</div>
+        <div class="honor-pct" style="background:rgba(232,232,240,0.08);color:var(--text);border:1px solid var(--border);">4.0 Scale: ≥ 2.60</div>
+      </div>
+      <div class="honor-card">
+        <div class="honor-title" style="color:var(--warning)">Satisfactory</div>
+        <div class="honor-range">≥ 50% of max GPA</div>
+        <div class="honor-pct" style="background:rgba(255,184,108,0.12);color:var(--warning);border:1px solid rgba(255,184,108,0.25);">4.0 Scale: ≥ 2.00</div>
+      </div>
+      <div class="honor-card">
+        <div class="honor-title" style="color:var(--accent3)">Academic Warning</div>
+        <div class="honor-range">Below 50% of max GPA</div>
+        <div class="honor-pct gb-red">4.0 Scale: Below 2.00</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GRADE SYSTEMS -->
+  <section id="grades">
+    <div class="section-tag">Grade Conversion</div>
+    <h2 class="section-heading">Three global grading systems</h2>
+    <p class="section-intro">
+      The Grade Converter tool translates percentage scores to letter grades and GPA points across the US, Pakistan HEC, and UK grading systems.
+    </p>
+
+    <div class="grade-systems">
+      <!-- US -->
+      <div class="scale-card">
+        <div class="scale-header">US Standard</div>
+        <table class="scale-table">
+          <thead><tr><th>%</th><th>Grade</th><th>GPA 4.0</th><th>Class</th></tr></thead>
+          <tbody>
+            <tr><td>90–100</td><td><span class="grade-badge gb-gold">A</span></td><td>4.0</td><td>Excellent</td></tr>
+            <tr><td>80–89</td><td><span class="grade-badge gb-blue">B</span></td><td>3.0</td><td>Good</td></tr>
+            <tr><td>70–79</td><td><span class="grade-badge gb-green">C</span></td><td>2.0</td><td>Satisfactory</td></tr>
+            <tr><td>60–69</td><td><span class="grade-badge gb-red">D</span></td><td>1.0</td><td>Passing</td></tr>
+            <tr><td>0–59</td><td><span class="grade-badge gb-red">F</span></td><td>0.0</td><td>Failing</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pakistan -->
+      <div class="scale-card">
+        <div class="scale-header">Pakistan HEC</div>
+        <table class="scale-table">
+          <thead><tr><th>%</th><th>Grade</th><th>GPA</th><th>Class</th></tr></thead>
+          <tbody>
+            <tr><td>85–100</td><td><span class="grade-badge gb-gold">A+</span></td><td>4.0</td><td>Outstanding</td></tr>
+            <tr><td>80–84</td><td><span class="grade-badge gb-gold">A</span></td><td>4.0</td><td>Excellent</td></tr>
+            <tr><td>75–79</td><td><span class="grade-badge gb-blue">B+</span></td><td>3.5</td><td>Very Good</td></tr>
+            <tr><td>71–74</td><td><span class="grade-badge gb-blue">B</span></td><td>3.0</td><td>Good</td></tr>
+            <tr><td>68–70</td><td><span class="grade-badge gb-green">C+</span></td><td>2.5</td><td>Above Average</td></tr>
+            <tr><td>64–67</td><td><span class="grade-badge gb-green">C</span></td><td>2.0</td><td>Average</td></tr>
+            <tr><td>60–63</td><td><span class="grade-badge gb-red">D</span></td><td>1.0</td><td>Passing</td></tr>
+            <tr><td>0–59</td><td><span class="grade-badge gb-red">F</span></td><td>0.0</td><td>Failing</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- UK -->
+      <div class="scale-card">
+        <div class="scale-header">UK System</div>
+        <table class="scale-table">
+          <thead><tr><th>%</th><th>Classification</th><th>GPA Eq.</th></tr></thead>
+          <tbody>
+            <tr><td>70–100</td><td><span class="grade-badge gb-gold">First Class</span></td><td>3.7–4.0</td></tr>
+            <tr><td>60–69</td><td><span class="grade-badge gb-blue">2:1 Upper</span></td><td>3.3–3.7</td></tr>
+            <tr><td>50–59</td><td><span class="grade-badge gb-green">2:2 Lower</span></td><td>2.7–3.3</td></tr>
+            <tr><td>40–49</td><td><span class="grade-badge gb-red">Third Class</span></td><td>2.0–2.7</td></tr>
+            <tr><td>0–39</td><td><span class="grade-badge gb-red">Fail</span></td><td>0.0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section id="stats">
+    <div class="section-tag">Statistics Tools</div>
+    <h2 class="section-heading">Descriptive stats, probability & matrices</h2>
+    <p class="section-intro">
+      Three statistical calculators bundled into one tab, covering the most common computation needs for mathematics coursework.
+    </p>
+
+    <div class="stats-features">
+      <div class="stat-feat-card">
+        <span class="stat-feat-icon">σ</span>
+        <div class="stat-feat-title">Descriptive Statistics</div>
+        <ul class="stat-feat-list">
+          <li>Count (n)</li>
+          <li>Mean (average)</li>
+          <li>Median (middle value)</li>
+          <li>Standard Deviation (σ)</li>
+          <li>Variance (σ²)</li>
+          <li>Minimum and Maximum</li>
+          <li>Range (Max − Min)</li>
+          <li>Q1 (25th percentile)</li>
+          <li>Q3 (75th percentile)</li>
+          <li>IQR (Q3 − Q1)</li>
+          <li>Coefficient of Variation %</li>
+          <li>Input: comma or space separated values</li>
+        </ul>
+      </div>
+
+      <div class="stat-feat-card">
+        <span class="stat-feat-icon">P(x)</span>
+        <div class="stat-feat-title">Probability Calculator</div>
+        <ul class="stat-feat-list">
+          <li>Normal distribution — Z-score, P(X≤x), P(X>x)</li>
+          <li>Binomial — P(X=k | n, p)</li>
+          <li>Poisson — P(X=k | λ)</li>
+          <li>Enter mean μ, std dev σ, and x value</li>
+          <li>Results displayed with full formula context</li>
+        </ul>
+        <div class="formula-block">
+          Normal: Z = (x − μ) / σ<br>
+          Binomial: P(X=k) = C(n,k) · pᵏ · (1−p)ⁿ⁻ᵏ<br>
+          Poisson: P(X=k) = λᵏ · e⁻λ / k!
+        </div>
+      </div>
+
+      <div class="stat-feat-card">
+        <span class="stat-feat-icon">[A]</span>
+        <div class="stat-feat-title">Matrix Operations</div>
+        <ul class="stat-feat-list">
+          <li>Input a 2×2 or 3×3 matrix</li>
+          <li>Determinant calculation</li>
+          <li>Trace (sum of diagonal)</li>
+          <li>Invertibility check (det ≠ 0)</li>
+          <li>Rank estimate</li>
+          <li>Results displayed with formula</li>
+        </ul>
+        <div class="formula-block">
+          det(A₂) = ad − bc<br>
+          det(A₃) = a(ei−fh) − b(di−fg) + c(dh−eg)<br>
+          tr(A) = Σ aᵢᵢ
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THESIS -->
+  <section id="thesis">
+    <div class="section-tag">Thesis Progress Tracker</div>
+    <h2 class="section-heading">Nine milestones from start to submission</h2>
+    <p class="section-intro">
+      The Thesis Progress tool pre-loads 9 default milestones covering the complete MS thesis journey. Students can check off completed stages, rename or delete milestones, and add custom ones.
+    </p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;">
+      <div class="milestone-track">
+        <div class="milestone-item done">
+          <div class="ms-num">Milestone 01</div>
+          <div class="ms-title">Topic Approval by Advisor</div>
+          <div class="ms-desc">Research topic agreed upon and formally approved by your thesis advisor.</div>
+        </div>
+        <div class="milestone-item done">
+          <div class="ms-num">Milestone 02</div>
+          <div class="ms-title">Literature Review Complete</div>
+          <div class="ms-desc">Comprehensive review of existing research and related work in your area.</div>
+        </div>
+        <div class="milestone-item done">
+          <div class="ms-num">Milestone 03</div>
+          <div class="ms-title">Proposal Defense</div>
+          <div class="ms-desc">Formal presentation of research proposal to the thesis committee.</div>
+        </div>
+        <div class="milestone-item done">
+          <div class="ms-num">Milestone 04</div>
+          <div class="ms-title">Data Collection / Proofs</div>
+          <div class="ms-desc">Core research work: gathering data, developing proofs, or running experiments.</div>
+        </div>
+        <div class="milestone-item">
+          <div class="ms-num">Milestone 05</div>
+          <div class="ms-title">First Draft Submitted</div>
+          <div class="ms-desc">Complete first draft of thesis document submitted to advisor for review.</div>
+        </div>
+      </div>
+
+      <div class="milestone-track">
+        <div class="milestone-item">
+          <div class="ms-num">Milestone 06</div>
+          <div class="ms-title">Advisor Feedback Incorporated</div>
+          <div class="ms-desc">Revisions based on advisor comments integrated into the manuscript.</div>
+        </div>
+        <div class="milestone-item">
+          <div class="ms-num">Milestone 07</div>
+          <div class="ms-title">Committee Review</div>
+          <div class="ms-desc">Full thesis committee reads and provides feedback on the revised draft.</div>
+        </div>
+        <div class="milestone-item">
+          <div class="ms-num">Milestone 08</div>
+          <div class="ms-title">Final Thesis Defense</div>
+          <div class="ms-desc">Public or departmental oral defense and Q&A with the committee.</div>
+        </div>
+        <div class="milestone-item">
+          <div class="ms-num">Milestone 09</div>
+          <div class="ms-title">Thesis Submitted to Graduate School</div>
+          <div class="ms-desc">Final approved manuscript submitted to the graduate school for archiving.</div>
+        </div>
+
+        <div style="margin-top:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 22px;">
+          <div style="font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;">Progress Metrics Shown</div>
+          <div class="prog-detail-row"><span class="prog-detail-key">Credit Hours %</span><span class="prog-detail-val">Done / Total</span></div>
+          <div class="prog-detail-row"><span class="prog-detail-key">Milestones %</span><span class="prog-detail-val">Checked / Total</span></div>
+          <div class="prog-detail-row"><span class="prog-detail-key">Status</span><span class="prog-detail-val">Early / In Progress / On Track</span></div>
+          <div class="prog-detail-row"><span class="prog-detail-key">Milestones Left</span><span class="prog-detail-val">Auto-counted</span></div>
+          <div class="prog-detail-row"><span class="prog-detail-key">Credits Remaining</span><span class="prog-detail-val">Total − Done</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DESIGN -->
+  <section id="design">
+    <div class="section-tag">Design & Technical Details</div>
+    <h2 class="section-heading">Built with precision and care</h2>
+    <p class="section-intro">
+      MathCalc uses a carefully considered dark aesthetic with three paired typefaces, a five-color palette, and purposeful micro-animations.
+    </p>
+
+    <div class="design-grid">
+      <!-- Colors -->
+      <div class="design-card">
+        <h4>Color Palette</h4>
+        <p>A dark navy/charcoal base with three distinct accent colors for different contexts — gold for primary actions, blue for secondary info, pink for warnings or errors.</p>
+        <div class="color-swatches">
+          <div class="swatch">
+            <div class="swatch-dot" style="background:#0a0a0f;border:1px solid #333;"></div>
+            <div class="swatch-lbl">Background<br>#0a0a0f</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-dot" style="background:#16161f;"></div>
+            <div class="swatch-lbl">Card<br>#16161f</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-dot" style="background:#ff6eb4;"></div>
+            <div class="swatch-lbl">Gold Accent<br>#ff6eb4</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-dot" style="background:#ff9ed2;"></div>
+            <div class="swatch-lbl">Blue Accent<br>#ff9ed2</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-dot" style="background:#c94d8a;"></div>
+            <div class="swatch-lbl">Pink Accent<br>#c94d8a</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-dot" style="background:#ff85c2;"></div>
+            <div class="swatch-lbl">Success<br>#ff85c2</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Typography -->
+      <div class="design-card">
+        <h4>Typography System</h4>
+        <p>Three Google Fonts chosen for their character and legibility in technical contexts. Each plays a distinct role across the interface.</p>
+        <div class="font-demo">
+          <div class="font-sample">
+            <div class="font-name">DM Serif Display — Large numbers, logo, results</div>
+            <div style="font-family:'DM Serif Display',serif;font-size:2rem;line-height:1;color:var(--accent)">3.847</div>
+          </div>
+          <div class="font-sample">
+            <div class="font-name">Syne 800 — Section headings, stat labels</div>
+            <div style="font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:var(--text)">GPA Calculator</div>
+          </div>
+          <div class="font-sample">
+            <div class="font-name">JetBrains Mono — Body text, inputs, labels</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--muted)">Course Name · Credits · Grade</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visual Effects -->
+      <div class="design-card">
+        <h4>Visual Effects</h4>
+        <p>Atmospheric depth is created through layered effects that don't rely on heavy CSS. The result is a polished look that loads fast.</p>
+        <ul class="tool-features" style="margin-top:12px;">
+          <li>Fixed grid pattern (40×40px) of faint blue lines across the full viewport</li>
+          <li>Two blur-filter glow orbs: gold top-right, blue bottom-left</li>
+          <li>All result panels fade in with a translateY animation on calculate</li>
+          <li>Tab switch triggers a fade + slide-up animation</li>
+          <li>Card hover raises border color toward gold tint</li>
+          <li>Input focus ring: 3px gold glow shadow</li>
+        </ul>
+      </div>
+
+      <!-- Technical -->
+      <div class="design-card">
+        <h4>Technical Architecture</h4>
+        <p>Designed for simplicity and portability. Works in any modern browser without an internet connection once loaded.</p>
+        <ul class="tool-features" style="margin-top:12px;">
+          <li>Single HTML file — no external JS libraries</li>
+          <li>Google Fonts loaded via CDN link (optional)</li>
+          <li>All state managed in plain JS arrays and variables</li>
+          <li>CSS custom properties for consistent theming</li>
+          <li>Responsive via CSS Grid with auto-fit columns</li>
+          <li>Mobile breakpoint at 700px — tabs stack, grids collapse</li>
+          <li>All calculations run instantly in-browser, no server needed</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div>
+    <div class="footer-logo">Math<span>Calc</span></div>
+    <div style="font-size:0.6rem;color:var(--muted);margin-top:4px;letter-spacing:0.08em;">BS / MS Program Calculator</div>
+  </div>
+  <div class="footer-info">
+    Department of Mathematics<br>
+    Tools: GPA · Credits · Statistics · Grade Converter · Thesis<br>
+    Programs: BS Math · MS Math · BS Applied · MS Applied
+  </div>
+</footer>
+
+</body>
+</html>
